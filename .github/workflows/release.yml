@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: --target universal-apple-darwin --bundles dmg
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: windows-latest
+            args: --bundles nsis
+            rust-targets: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm test
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
+          releaseName: TrailTag ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
+          releaseBody: |
+            ### 下載
+            - **macOS**（Apple Silicon／Intel）：`TrailTag_*_universal.dmg`
+            - **Windows**：`TrailTag_*_x64-setup.exe`
+
+            ### ⚠️ macOS 首次開啟顯示「已損毀」？
+            安裝檔未經 Apple 付費簽章，這是 macOS 對網路下載 App 的保護，軟體並沒有壞掉。把 TrailTag 拖進「應用程式」後，在「終端機」執行：
+
+            ```bash
+            xattr -dr com.apple.quarantine /Applications/TrailTag.app
+            ```
+
+            再重新開啟即可（只需做一次，更新版本後需重新執行）。
+
+            ### Windows
+            SmartScreen 若顯示警告，點「其他資訊」→「仍要執行」。
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

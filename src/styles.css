@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --color-canvas: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f2f5;
+  --color-line: #e2e5ea;
+  --color-ink: #1b1f27;
+  --color-ink-2: #4f5866;
+  --color-ink-3: #8a93a1;
+  --color-accent: #0f7b6c;
+  --color-accent-2: #0b6357;
+  --color-accent-soft: #e2f3f0;
+  --color-warn: #b7791f;
+  --color-warn-soft: #fdf3e1;
+  --color-danger: #c2413a;
+  --color-danger-soft: #fbe9e8;
+
+  --color-st-interpolated: #16a34a;
+  --color-st-extrapolated: #d97706;
+  --color-st-manual: #7c3aed;
+  --color-st-existing: #2563eb;
+  --color-st-unmatched: #dc2626;
+  --color-st-notime: #6b7280;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --color-canvas: #12151a;
+      --color-surface: #1a1e25;
+      --color-surface-2: #222731;
+      --color-line: #2e3440;
+      --color-ink: #e7eaef;
+      --color-ink-2: #aab2bf;
+      --color-ink-3: #727b89;
+      --color-accent: #2bb39f;
+      --color-accent-2: #48c7b4;
+      --color-accent-soft: #163a35;
+      --color-warn: #e0a64b;
+      --color-warn-soft: #3a2e19;
+      --color-danger: #ef6b63;
+      --color-danger-soft: #3d1f1d;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-canvas: #12151a;
+    --color-surface: #1a1e25;
+    --color-surface-2: #222731;
+    --color-line: #2e3440;
+    --color-ink: #e7eaef;
+    --color-ink-2: #aab2bf;
+    --color-ink-3: #727b89;
+    --color-accent: #2bb39f;
+    --color-accent-2: #48c7b4;
+    --color-accent-soft: #163a35;
+    --color-warn: #e0a64b;
+    --color-warn-soft: #3a2e19;
+    --color-danger: #ef6b63;
+    --color-danger-soft: #3d1f1d;
+  }
+
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  input,
+  select,
+  textarea {
+    user-select: text;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply border-transparent bg-accent text-white hover:bg-accent-2;
+  }
+  .btn-ghost {
+    @apply border-transparent bg-transparent hover:bg-surface-2;
+  }
+  .btn-sm {
+    @apply px-2 py-1 text-xs;
+  }
+  .field {
+    @apply rounded-md border border-line bg-surface px-2 py-1 text-sm text-ink outline-none focus:border-accent;
+  }
+  .panel {
+    @apply rounded-xl border border-line bg-surface;
+  }
+  .label {
+    @apply text-xs font-medium text-ink-3;
+  }
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-surface-2);
+}
+
+.ghost-label {
+  background: transparent;
+  border: none;
+}
+
+.map-dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
